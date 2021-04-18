@@ -10,7 +10,7 @@ configure(allprojects) { project ->
 	apply plugin: "eclipse"
 	apply plugin: "idea"
 	apply plugin: "signing"
-	apply plugin: "maven"
+	apply plugin: "java-library"
 	eclipse {
 		jdt {
 			//if you want to alter the java versions (by default they are configured with gradle java plugin settings):
@@ -71,7 +71,7 @@ configure(allprojects) { project ->
 	repositories {
 		mavenLocal()
 		 maven {
-	        url "http://maven.aliyun.com/nexus/content/groups/public"
+	        url "https://maven.aliyun.com/nexus/content/groups/public"
 	    }
 		
 		mavenCentral()
@@ -95,7 +95,7 @@ configure(allprojects) { project ->
 				srcDir 'src/main/resources'
 				srcDir 'src/main/java'  exclude '**/*.java'
 			}
-			compileClasspath = configurations.compile + configurations.runtime
+//			compileClasspath = configurations.compile + configurations.runtime
 		}
 		test {
 			java {
@@ -114,14 +114,14 @@ configure(allprojects) { project ->
 
 
 	dependencies {
-		testCompile 'junit:junit:4.12'
+		testImplementation 'junit:junit:4.12'
 		//compile 'net.sf.json-lib:json-lib:2.4-jdk15'
-		compile(
+		api(
 
 				[group: 'com.bbossgroups', name: 'bboss-schedule', version: "${bboss_version}", transitive: true],
 				
 		)
-		runtime(
+		runtimeOnly(
 				[group: 'com.bbossgroups', name: 'bboss-rt', version: "${bboss_version}", transitive: false],
 		)
 	}
@@ -130,7 +130,10 @@ configure(allprojects) { project ->
 
 	task copyJarFiles(type: Sync,dependsOn:'jar'){
 		from fileTree(dir: 'lib', include: '**/*.jar')
-		from configurations.compile
+		from configurations.api{
+			canBeResolved=true
+
+		}
 		from jar.outputs
 		exclude { details -> details.file.name.startsWith('bboss-rt')  }
 		into 'build/dist/lib'
@@ -138,7 +141,13 @@ configure(allprojects) { project ->
 	}
 
 	task copyRTJarFiles(type: Copy,dependsOn:'copyJarFiles'){
-		from configurations.runtime - configurations.compile
+		from configurations.runtimeOnly{
+			canBeResolved=true
+
+		} - configurations.api{
+			canBeResolved=true
+
+		}
 		into 'build/dist'
 	}
 	task copyToolFiles(type: Copy ,dependsOn:'copyRTJarFiles')  {
@@ -164,7 +173,7 @@ configure(allprojects) { project ->
 	task releaseVersion(type: Zip,dependsOn:['copyToolFiles','copyResourcesfiles']) {
 
 		//appendix = 'wrapper'
-		classifier = 'released'
+		archiveClassifier = 'released'
 		from 'build/dist/'
 
 	}
