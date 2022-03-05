@@ -93,7 +93,7 @@ configure(allprojects) { project ->
 			}
 			resources {
 				srcDir 'src/main/resources'
-				srcDir 'src/main/java'  exclude '**/*.java'
+
 			}
 //			compileClasspath = configurations.compile + configurations.runtime
 		}
@@ -104,7 +104,7 @@ configure(allprojects) { project ->
 			}
 			resources {
 				srcDir 'src/test/resources'
-				srcDir 'src/test/java'  exclude '**/*.java'
+
 			}
 
 		}
