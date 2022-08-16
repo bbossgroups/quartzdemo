@@ -112,7 +112,10 @@ configure(allprojects) { project ->
 	}
 
 
-
+	configurations {
+		//屏蔽log4j
+		api.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+	}
 	dependencies {
 		testImplementation 'junit:junit:4.12'
 		//compile 'net.sf.json-lib:json-lib:2.4-jdk15'
@@ -120,6 +123,12 @@ configure(allprojects) { project ->
 
 				[group: 'com.bbossgroups', name: 'bboss-schedule', version: "${bboss_version}", transitive: true],
 				
+		)
+		//采用log4j2记录日志
+		api(
+				[group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j2_version}", transitive: false],
+				[group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j2_version}", transitive: false],
+				[group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j2_version}", transitive: true],
 		)
 		runtimeOnly(
 				[group: 'com.bbossgroups', name: 'bboss-bootstrap-rt', version: "${bboss_version}", transitive: true],
