@@ -40,12 +40,13 @@ configure(allprojects) { project ->
 	}
 
 	task sourcesJar(type: Jar) {
-		classifier = "sources"
+        duplicatesStrategy = DuplicatesStrategy.WARN
+		archiveClassifier = "sources"
 		from sourceSets.main.allJava
 	}
 
 	task javaDocJar(type: Jar, dependsOn: javadoc) {
-		classifier = "javadoc"
+		archiveClassifier = "javadoc"
 		from javadoc.destinationDir
 	}
 	artifacts {
@@ -178,7 +179,9 @@ configure(allprojects) { project ->
 		filteringCharset = 'UTF-8'
 		into 'build/dist/resources'
 	}
-
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.WARN
+    }
 	task releaseVersion(type: Zip,dependsOn:['copyToolFiles','copyResourcesfiles']) {
 
 		//appendix = 'wrapper'
